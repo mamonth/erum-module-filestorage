@@ -48,9 +48,10 @@ class FileStorage extends \Erum\ModuleAbstract
     }
 
     /**
-     * @param $fileName
+     * @param $filename
      * @param null $extension
      * @param bool $move
+     * @internal param $fileName
      * @return string
      */
     public function setFile( $filename, $extension = null, $move = false )
@@ -153,7 +154,7 @@ class FileStorage extends \Erum\ModuleAbstract
         $hash .= md5( microtime( true ) . mt_rand( 0, mt_getrandmax() ) );
 
         // file crc, 8ch
-        $hash .= str_pad( abs( hash_file( 'crc32', $filename ) ), 8, 0, STR_PAD_LEFT );
+        $hash .= str_pad( hash_file( 'crc32', $filename ), 8, 0, STR_PAD_LEFT );
 
         // storage ids in 16bit string 8ch
         // Support up to 4 storage per file for now
@@ -167,7 +168,7 @@ class FileStorage extends \Erum\ModuleAbstract
 
         if( strlen( $hash ) !== 50 )
         {
-            throw new \FileStorage\Exception( 'Something went wrong, incorrect hash length ' . strlen( $hash ) . ' instead of 50' );
+            throw new \FileStorage\Exception( 'Something went wrong, incorrect hash length ' . strlen( $hash ) . ' instead of 50. Hash "' . $hash . '".' );
         }
 
         return $hash;

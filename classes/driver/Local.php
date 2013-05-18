@@ -55,6 +55,9 @@ class Local extends \FileStorage\DriverAbstract
     {
         $targetPath = $this->localBasePath . $this->getFileDirectory( $hash );
 
+        $umaskOld = umask(0);
+
+
         if( !file_exists( $targetPath ) )
         {
             mkdir( $targetPath, 0777, true );
@@ -63,6 +66,10 @@ class Local extends \FileStorage\DriverAbstract
         $targetPath .= $this->getFilename( $hash );
 
         copy( $filename, $targetPath );
+
+        chmod( $targetPath, 0777 );
+
+        umask( $umaskOld );
 
         return true;
     }
