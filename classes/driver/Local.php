@@ -76,7 +76,26 @@ class Local extends \FileStorage\DriverAbstract
 
     public function setContent( $hash, $fileContent )
     {
+        $targetPath = $this->localBasePath . $this->getFileDirectory( $hash );
 
+        $umaskOld = umask(0);
+
+        if( !file_exists( $targetPath ) )
+        {
+            mkdir( $targetPath, 0777, true );
+        }
+
+        $targetPath .= $this->getFilename( $hash );
+
+        error_log( 'Save file to: ' . $this->getFilename( $hash ) . ' len:' . strlen( $fileContent ) . PHP_EOL, 3, '/tmp/upload.log' );
+
+        file_put_contents( $targetPath, (string)$fileContent );
+
+        chmod( $targetPath, 0777 );
+
+        umask( $umaskOld );
+
+        return true;
     }
 
     public function getFileUrl( $hash )
@@ -101,5 +120,14 @@ class Local extends \FileStorage\DriverAbstract
         $extension = \FileStorage::getInfoByHash( $hash, 'extension' );
 
         return $hash . ( $extension ? '.' . $extension : '' );
+    }
+
+    public function getContent( $hash )
+    {
+        $filePath = $this->localBasePath . $this->getFileDirectory( $hash ) . $this->getFilename( $hash );
+
+        if( !file_exists( $filePath ) ) throw new \FileStorage\Exception('File ' . $hash . ' not found on storage "Local"');
+
+        return file_get_contents( $filePath );
     }
 }

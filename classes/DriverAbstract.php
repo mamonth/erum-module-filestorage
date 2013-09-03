@@ -75,4 +75,6 @@ abstract class DriverAbstract
     abstract public function setFile( $hash, $filename );
 
     abstract public function setContent( $hash, $fileContent );
+
+    abstract public function getContent( $hash );
 }
